@@ -59,7 +59,7 @@ podman compose up -d --build
 
 ### B. Dari Perangkat Lain di LAN / Wi-Fi
 - Gunakan IP VPS yang dihasilkan oleh `init-network.sh`:
-  - **HTTP:** `http://<VPS_IP>` (contoh: `http://192.168.1.150`)
+  - **HTTP:** `http://<VPS_IP>` (contoh : `http://192.168.1.150`)
   - **SSH:** `ssh ubuntu@<VPS_IP>` (port 22)
 
 ---
@@ -86,7 +86,7 @@ podman compose up -d --build
 
 ## 5. Troubleshooting
 
-### Warning: Remote Host Identification Has Changed (SSH Host Key Changed)
+### Warning : Remote Host Identification Has Changed (SSH Host Key Changed)
 Jika container di-rebuild atau di-restart, SSH server di dalam container akan menghasilkan host key baru. Jalankan perintah ini di laptop host untuk menghapus entri key lama dari `known_hosts`:
 
 ```bash
