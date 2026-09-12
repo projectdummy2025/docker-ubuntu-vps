@@ -1,19 +1,22 @@
 # Simulasi VPS Ubuntu 24.04 (DevOps Experiment)
 
-Proyek ini merupakan eksperimen **DevOps & Infrastructure as Code (IaC)** untuk mensimulasikan lingkungan **VPS / System Container (LXC-like)** berbasis Ubuntu 24.04 menggunakan Docker Compose.
+Proyek ini merupakan eksperimen **DevOps & Infrastructure as Code (IaC)** untuk mensimulasikan lingkungan **VPS ringan / OCI System Container** berbasis Ubuntu 24.04 menggunakan Docker/Podman Compose.
+
+Proyek ini menggunakan virtualisasi tingkat sistem operasi (OS-level Virtualization), bukan Virtual Machine berbasis Hypervisor (seperti KVM, Proxmox, atau VMware).
 
 ---
 
 ## Konsep & Arsitektur
 
-- **System Container (LXC-like):** Menggunakan `systemd` sebagai PID 1 untuk mengelola service (SSH, Nginx) layaknya VPS sejati.
-- **Resource Allocation:** Dibatasi pada **4 vCPU** (`cpus: 4.0`) dan **8 GB RAM** (`mem_limit: 8g`).
+- **System Container:** Menggunakan `systemd` sebagai PID 1 untuk mengelola service (SSH, Nginx) layaknya VPS sejati tanpa beban overhead VM.
+- **Isolasi Resource (Cgroups v2):** Dibatasi secara ketat pada **4 vCPU** (`cpus: 4.0`) dan **8 GB RAM** (`mem_limit: 8g`).
+  - *Catatan Teknis:* Karena berbasis OCI Container (bukan Full Hardware VM / KVM), statistik perintah `free -h` di dalam container akan menampilkan kapasitas RAM OS Host. Namun, Kernel Linux tetap membatasi dan mengisolasi penggunaan fisik RAM container secara ketat di angka 8 GB.
 - **Hybrid Dual-Network:**
   1. **Macvlan Network:** Memberikan IP independen di jaringan LAN/Wi-Fi router untuk akses dari perangkat luar (IP laptop host tidak diekspos).
   2. **Loopback Bridge:** Mengunci port local binding (`127.0.0.1`) agar laptop host dapat mengakses VPS via `localhost` secara aman dan terisolasi.
 - **Automated Network Discovery:** Script pembantu otomatis mendeteksi interface aktif, subnet, dan gateway router tempat laptop terhubung.
 
-
+---
 
 ## 1. Deteksi Jaringan Router & Buat `.env`
 
