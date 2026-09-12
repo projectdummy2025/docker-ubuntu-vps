@@ -81,3 +81,20 @@ podman compose up -d --build
   ```bash
   docker compose down
   ```
+
+---
+
+## 5. Troubleshooting
+
+### Warning: Remote Host Identification Has Changed (SSH Host Key Changed)
+Jika container di-rebuild atau di-restart, SSH server di dalam container akan menghasilkan host key baru. Jalankan perintah ini di laptop host untuk menghapus entri key lama dari `known_hosts`:
+
+```bash
+ssh-keygen -f "$HOME/.ssh/known_hosts" -R "[localhost]:2222"
+```
+
+Atau gunakan opsi SSH tanpa pengecekan ketat host key:
+
+```bash
+ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@localhost -p 2222
+```
