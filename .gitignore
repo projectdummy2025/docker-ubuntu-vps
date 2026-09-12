@@ -1,0 +1,12 @@
+# File lingkungan lokal dinamis (dihasilkan oleh src/init-network.sh)
+.env
+.env.*
+!.env.example
+
+# OS & Editor temp files
+.DS_Store
+Thumbs.db
+*.swp
+*.tmp
+.idea/
+.vscode/
