@@ -1,6 +1,6 @@
-# Simulasi VPS Ubuntu 24.04 (DevOps Experiment)
+# DevOps Experiment - Simulasi VPS Ubuntu 24.04
 
-Proyek ini merupakan eksperimen **DevOps & Infrastructure as Code (IaC)** untuk mensimulasikan lingkungan **VPS ringan / OCI System Container** berbasis Ubuntu 24.04 menggunakan Docker/Podman Compose.
+Proyek ini merupakan eksperimen **DevOps & Infrastructure as Code (IaC)** untuk mensimulasikan lingkungan **VPS ringan atau OCI System Container** berbasis Ubuntu 24.04 menggunakan Docker atau Podman Compose.
 
 Proyek ini menggunakan virtualisasi tingkat sistem operasi (OS-level Virtualization), bukan Virtual Machine berbasis Hypervisor (seperti KVM, Proxmox, atau VMware).
 
