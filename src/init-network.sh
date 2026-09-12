@@ -1,38 +1,44 @@
 #!/bin/bash
-# Script deteksi otomatis jaringan Wi-Fi/LAN host untuk Macvlan
+# Script deteksi otomatis & generator file .env untuk Macvlan VPS
 
-# Dapatkan lokasi root project
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+ENV_FILE="$PROJECT_ROOT/.env"
 
-# 1. Cari default network interface yang aktif
+# 1. Deteksi interface default yang aktif
 IFACE=$(ip route | grep default | awk '{print $5}' | head -n1)
 
 if [ -z "$IFACE" ]; then
-    echo "Gagal mendeteksi interface jaringan aktif."
+    echo "Error: Gagal mendeteksi interface jaringan aktif. Pastikan laptop terhubung ke Wi-Fi / LAN."
     exit 1
 fi
 
-# 2. Ambil IP host dan Subnet
+# 2. Ambil statistik IP, Subnet, dan Gateway
 IP_HOST=$(ip -4 addr show "$IFACE" | grep inet | awk '{print $2}' | head -n1)
 SUBNET=$(ip route | grep "$IFACE" | grep -v default | awk '{print $1}' | head -n1)
 GATEWAY=$(ip route | grep default | awk '{print $3}' | head -n1)
 
-# 3. Hitung prefix IP (3 oktet pertama) untuk menentukan IP VPS (.150)
+# 3. Alokasikan IP VPS (.150) berdasarkan subnet router saat ini
 PREFIX=$(echo "$IP_HOST" | cut -d'.' -f1-3)
 VPS_IP="${PREFIX}.150"
 
-# 4. Tulis ke file .env di root project
-cat <<EOF > "$PROJECT_ROOT/.env"
+# 4. Simpan konfigurasi ke file .env di root proyek
+cat <<EOF > "$ENV_FILE"
+# Konfigurasi Jaringan Dinamis (Otomatis Dihasilkan oleh init-network.sh)
 PARENT_IFACE=$IFACE
 SUBNET=$SUBNET
 GATEWAY=$GATEWAY
 VPS_IP=$VPS_IP
 EOF
 
-echo "Jaringan terdeteksi:"
-echo "- Interface: $IFACE"
-echo "- Subnet: $SUBNET"
-echo "- Gateway: $GATEWAY"
-echo "- IP VPS (Macvlan): $VPS_IP"
-echo "File .env berhasil dibuat di $PROJECT_ROOT/.env"
+echo "--------------------------------------------------"
+echo " Status Jaringan Router Terdeteksi & Disimpan:"
+echo "--------------------------------------------------"
+echo " Interface  : $IFACE"
+echo " Subnet     : $SUBNET"
+echo " Gateway    : $GATEWAY"
+echo " IP VPS LAN : $VPS_IP"
+echo "--------------------------------------------------"
+echo " File .env berhasil diperbarui di: $ENV_FILE"
+echo " Siap dipasang! Jalankan: docker compose up -d --build"
+echo "--------------------------------------------------"
