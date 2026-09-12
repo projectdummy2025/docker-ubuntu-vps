@@ -31,14 +31,7 @@ GATEWAY=$GATEWAY
 VPS_IP=$VPS_IP
 EOF
 
-echo "--------------------------------------------------"
-echo " Status Jaringan Router Terdeteksi & Disimpan:"
-echo "--------------------------------------------------"
 echo " Interface  : $IFACE"
 echo " Subnet     : $SUBNET"
 echo " Gateway    : $GATEWAY"
 echo " IP VPS LAN : $VPS_IP"
-echo "--------------------------------------------------"
-echo " File .env berhasil diperbarui di: $ENV_FILE"
-echo " Siap dipasang! Jalankan: docker compose up -d --build"
-echo "--------------------------------------------------"
