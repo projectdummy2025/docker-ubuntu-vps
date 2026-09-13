@@ -5,12 +5,14 @@ ENV TERM=xterm-256color
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
 
-# Pasang systemd, ssh, nginx, dan utilitas dasar tanpa dependensi berlebih
+# Pasang systemd, ssh, nginx, docker, dan utilitas dasar tanpa dependensi berlebih
 RUN apt-get update && apt-get install -y --no-install-recommends \
     systemd \
     systemd-sysv \
     openssh-server \
     nginx \
+    docker.io \
+    docker-compose-v2 \
     sudo \
     curl \
     iproute2 \
@@ -25,12 +27,13 @@ RUN rm -f /lib/systemd/system/multi-user.target.wants/getty.target \
 
 # Aktifkan service agar otomatis jalan saat boot init
 RUN systemctl enable ssh && \
-    systemctl enable nginx
+    systemctl enable nginx && \
+    systemctl enable docker
 
 # Konfigurasi user admin VPS dengan akses sudo tanpa password
 RUN (id -u ubuntu >/dev/null 2>&1 || useradd -m -s /bin/bash ubuntu) && \
     echo "ubuntu:admin0123!" | chpasswd && \
-    usermod -aG sudo ubuntu && \
+    usermod -aG sudo,docker ubuntu && \
     echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 STOPSIGNAL SIGRTMIN+3
