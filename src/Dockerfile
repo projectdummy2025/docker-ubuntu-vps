@@ -1,6 +1,9 @@
 FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
+ENV TERM=xterm-256color
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
 
 # Pasang systemd, ssh, nginx, dan utilitas dasar tanpa dependensi berlebih
 RUN apt-get update && apt-get install -y --no-install-recommends \
