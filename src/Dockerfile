@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     docker.io \
     docker-compose-v2 \
     iptables \
+    git \
     sudo \
     curl \
     iproute2 \
