@@ -11,8 +11,7 @@ services:
       - LANG=C.UTF-8
       - LC_ALL=C.UTF-8
     systemd: true
-    cap_add:
-      - SYS_ADMIN
+    privileged: true
     security_opt:
       - seccomp:unconfined
     tmpfs:

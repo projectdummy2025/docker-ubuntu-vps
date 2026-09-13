@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     nginx \
     docker.io \
     docker-compose-v2 \
+    iptables \
     sudo \
     curl \
     iproute2 \
@@ -24,6 +25,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Pangkas unit service yang tidak diperlukan di dalam container
 RUN rm -f /lib/systemd/system/multi-user.target.wants/getty.target \
     && rm -f /lib/systemd/system/systemd-resolved.service
+
+# Konfigurasi Docker daemon untuk DinD (nonaktifkan containerd-snapshotter overlayfs conflict)
+RUN mkdir -p /etc/docker && \
+    echo '{"features": {"containerd-snapshotter": false}}' > /etc/docker/daemon.json
 
 # Aktifkan service agar otomatis jalan saat boot init
 RUN systemctl enable ssh && \
