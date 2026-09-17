@@ -9,8 +9,8 @@ Proyek ini menggunakan virtualisasi tingkat sistem operasi (OS-level Virtualizat
 ## Konsep & Arsitektur
 
 - **System Container :** Menggunakan `systemd` sebagai PID 1 untuk mengelola service (SSH, Nginx) layaknya VPS sejati tanpa beban overhead VM.
-- **Isolasi Resource (Cgroups v2) :** Dibatasi secara ketat pada **4 vCPU** (`cpus: 4.0`) dan **8 GB RAM** (`mem_limit: 8g`).
-  - *Catatan Teknis:* Karena berbasis OCI Container (bukan Full Hardware VM / KVM), statistik perintah `free -h` di dalam container akan menampilkan kapasitas RAM OS Host. Namun, Kernel Linux tetap membatasi dan mengisolasi penggunaan fisik RAM container secara ketat di angka 8 GB.
+- **Isolasi Resource (Cgroups v2 + LXCFS) :** Dibatasi pada **4 vCPU** (`cpus: 4.0`) dan **8 GB RAM** (`mem_limit: 8g`).
+  - Menggunakan **LXCFS** agar perintah `free -h`, `top`, dan `nproc` di dalam container secara akurat membaca batasan cgroup (8 GB RAM & 4 vCPU), bukan kapasitas host.
 - **Hybrid Dual-Network :**
   1. **Macvlan Network :** Memberikan IP independen di jaringan LAN/Wi-Fi router untuk akses dari perangkat luar (IP laptop host tidak diekspos).
   2. **Loopback Bridge :** Mengunci port local binding (`127.0.0.1`) agar laptop host dapat mengakses VPS via `localhost` secara aman dan terisolasi.
@@ -18,7 +18,25 @@ Proyek ini menggunakan virtualisasi tingkat sistem operasi (OS-level Virtualizat
 
 ---
 
-## 1. Deteksi Jaringan Router & Buat `.env`
+## 1. Prasyarat Host: Pasang LXCFS
+
+Agar container dapat membaca limit CPU dan RAM sesuai spesifikasi VPS yang ditentukan:
+
+**Fedora:**
+```bash
+sudo dnf install -y lxcfs
+sudo systemctl enable --now lxcfs
+```
+
+**Ubuntu / Debian:**
+```bash
+sudo apt update && sudo apt install -y lxcfs
+sudo systemctl enable --now lxcfs
+```
+
+---
+
+## 2. Deteksi Jaringan Router & Buat `.env`
 
 Jalankan script otomatisasi setiap kali Anda terhubung ke router / Wi-Fi baru :
 
@@ -30,7 +48,7 @@ Script ini akan membuat file `.env` yang terisi variabel `PARENT_IFACE`, `SUBNET
 
 ---
 
-## 2. Jalankan Container
+## 3. Jalankan Container
 
 Docker Compose :
 ```bash
@@ -44,7 +62,7 @@ podman compose up -d --build
 
 ---
 
-## 3. Pengujian dan Akses Layanan
+## 4. Pengujian dan Akses Layanan
 
 ### A. Dari Laptop Host (Localhost)
 - **HTTP (Nginx) :**
@@ -64,7 +82,7 @@ podman compose up -d --build
 
 ---
 
-## 4. Manajemen Container
+## 5. Manajemen Container
 
 - **Cek Status :**
   ```bash
@@ -84,7 +102,7 @@ podman compose up -d --build
 
 ---
 
-## 5. Troubleshooting
+## 6. Troubleshooting
 
 ### Warning : Remote Host Identification Has Changed (SSH Host Key Changed)
 Jika container di-rebuild atau di-restart, SSH server di dalam container akan menghasilkan host key baru. Jalankan perintah ini di laptop host untuk menghapus entri key lama dari `known_hosts` :
