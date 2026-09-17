@@ -5,7 +5,7 @@ ENV TERM=xterm-256color
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
 
-# Pasang systemd, ssh, nginx, docker, dan utilitas dasar tanpa dependensi berlebih
+# Pasang paket dasar server, MOTD, monitoring, dan utilitas standar VPS
 RUN apt-get update && apt-get install -y --no-install-recommends \
     systemd \
     systemd-sysv \
@@ -17,9 +17,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     sudo \
     curl \
+    wget \
     iproute2 \
     procps \
     ca-certificates \
+    net-tools \
+    htop \
+    nano \
+    vim \
+    cron \
+    rsync \
+    ufw \
+    landscape-common \
+    update-motd \
+    locales \
+    && locale-gen en_US.UTF-8 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -34,6 +46,7 @@ RUN mkdir -p /etc/docker && \
 # Aktifkan service agar otomatis jalan saat boot init
 RUN systemctl enable ssh && \
     systemctl enable nginx && \
+    systemctl enable cron && \
     systemctl enable docker
 
 # Konfigurasi user admin VPS dengan akses sudo tanpa password
