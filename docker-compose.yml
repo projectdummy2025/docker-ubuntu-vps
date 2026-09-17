@@ -4,6 +4,7 @@ services:
       context: .
       dockerfile: src/Dockerfile
     container_name: ubuntu-vps
+    hostname: vps-ubuntu
     tty: true
     stdin_open: true
     environment:
