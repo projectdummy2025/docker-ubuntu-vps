@@ -7,6 +7,5 @@
 .DS_Store
 Thumbs.db
 *.swp
-*.tmp
-.idea/
-.vscode/
+# Local VPS persistent data
+data/
