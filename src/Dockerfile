@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     nginx \
     docker.io \
     docker-compose-v2 \
+    docker-buildx \
     iptables \
     git \
     sudo \
@@ -47,9 +48,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN rm -f /lib/systemd/system/multi-user.target.wants/getty.target \
     && rm -f /lib/systemd/system/systemd-resolved.service
 
-# Konfigurasi Docker daemon untuk DinD (nonaktifkan containerd-snapshotter overlayfs conflict)
+# Konfigurasi Docker daemon untuk DinD (optimasi MTU 1350, DNS publik, dan nonaktifkan containerd-snapshotter)
 RUN mkdir -p /etc/docker && \
-    echo '{"features": {"containerd-snapshotter": false}}' > /etc/docker/daemon.json
+    echo '{"features": {"containerd-snapshotter": false}, "mtu": 1350, "dns": ["1.1.1.1", "8.8.8.8"]}' > /etc/docker/daemon.json
 
 # Salin script inisialisasi boot
 COPY src/vps-init.sh /usr/local/bin/vps-init.sh
@@ -75,11 +76,13 @@ RUN systemctl enable ssh && \
     systemctl enable docker && \
     systemctl enable vps-network-tune
 
-# Konfigurasi user admin VPS dengan akses sudo tanpa password
+# Konfigurasi user admin VPS dan user root (mendukung login langsung root/ubuntu)
 RUN (id -u ubuntu >/dev/null 2>&1 || useradd -m -s /bin/bash ubuntu) && \
     echo "ubuntu:admin0123!" | chpasswd && \
+    echo "root:admin0123!" | chpasswd && \
     usermod -aG sudo,docker ubuntu && \
-    echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+    echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
+    sed -i 's/#*PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
 
 STOPSIGNAL SIGRTMIN+3
 CMD ["/lib/systemd/systemd"]
