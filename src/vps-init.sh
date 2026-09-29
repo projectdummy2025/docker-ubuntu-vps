@@ -27,5 +27,7 @@ fi
 
 if [ ! -f /root/.bashrc ]; then
     cp -rT /etc/skel /root
+    # Root default prompt: polos tanpa warna (standar VPS)
+    sed -i 's/xterm-color|\*-256color) color_prompt=yes/#xterm-color|\*-256color) color_prompt=yes/' /root/.bashrc
 fi
 
